@@ -1,67 +1,99 @@
-import { Link, useLocation } from 'react-router-dom'
-import { FiBell, FiMenu, FiX, FiChevronDown } from 'react-icons/fi'
-import { useState } from 'react'
+import { Link, useLocation } from "react-router-dom";
+import {
+  FiHome,
+  FiActivity,
+  FiCompass,
+  FiAward,
+  FiBell,
+  FiUser,
+  FiBookmark,
+  FiUsers,
+  FiSettings,
+  FiLogOut,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
+import { useState } from "react";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const location = useLocation()
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
-  const items = [
-    { label: "Community Feed", href: "/" },
-    { label: "Training Zone", href: "/dashboard" }
-  ]
+  const menuItems = [
+    { label: "Home", href: "/", icon: <FiHome /> },
+    { label: "Training Zone", href: "/dashboard", icon: <FiActivity /> },
+    { label: "Explore", href: "#", icon: <FiCompass /> },
+    { label: "Challenges", href: "#", icon: <FiAward /> },
+    { label: "Notifications", href: "#", icon: <FiBell />, badge: 3 },
+    { label: "Profile", href: "/profile", icon: <FiUser /> },
+    { label: "Saved", href: "#", icon: <FiBookmark /> },
+    { label: "Groups", href: "#", icon: <FiUsers /> },
+    { label: "Settings", href: "#", icon: <FiSettings /> },
+  ];
 
-  const toggleMenu = () => setIsOpen(!isOpen)
-  const closeMenu = () => setIsOpen(false)
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <header className="fitness-navbar">
       <div className="nav-container">
         <Link to="/" className="brand-logo" onClick={closeMenu}>
-          <span className="brand-text">NAVCHETNA <span className="brand-accent">2.0</span></span>
+          <span className="brand-icon">⌁</span>
+
+          <span className="brand-text">
+            NAVCHETNA <span className="brand-accent">2.0</span>
+          </span>
+
+          <span className="brand-subtitle">FIT • CONNECT • GROW</span>
         </Link>
 
-        <nav className={`nav-menu ${isOpen ? 'active' : ''}`}>
-          {items.map(item => (
-            <Link 
-              key={item.href} 
-              to={item.href} 
-              className={`nav-link ${location.pathname === item.href ? 'active-link' : ''}`}
-              onClick={closeMenu}
-            >
-              {item.label}
-            </Link>
-          ))}
-          
-          <div className="mobile-auth">
-            <Link to="/login" className="login-link" onClick={closeMenu}>Login</Link>
-            <Link to="/signup" className="signup-btn" onClick={closeMenu}>Sign Up</Link>
-          </div>
+        <nav className={`nav-menu ${isOpen ? "active" : ""}`}>
+          {menuItems.map((item) =>
+            item.href === "#" ? (
+              <button
+                key={item.label}
+                className="nav-link nav-button"
+                onClick={() => alert(`${item.label} coming soon!`)}
+              >
+                <span className="nav-icon">{item.icon}</span>
+
+                <span className="nav-label">{item.label}</span>
+
+                {item.badge && (
+                  <span className="notification-badge">
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            ) : (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`nav-link ${
+                  location.pathname === item.href ? "active-link" : ""
+                }`}
+                onClick={closeMenu}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </Link>
+            )
+          )}
         </nav>
 
-        <div className="header-actions">
-          <Link to="/login" className="login-link desktop-only">Login</Link>
-          <Link to="/signup" className="signup-btn desktop-only">Sign Up</Link>
+        <button className="logout-btn">
+          <FiLogOut />
+          <span>Log Out</span>
+        </button>
 
-          <div className="divider desktop-only"></div>
-
-          <div className="notification-wrapper">
-            <FiBell className="icon-btn" />
-            <span className="notification-badge">2</span>
-          </div>
-          
-          <div className="profile-menu">
-            <img src="https://i.pravatar.cc/150?img=11" alt="User" className="avatar" />
-            <FiChevronDown className="dropdown-icon" />
-          </div>
-        </div>
-
-        <button className="mobile-menu-btn" onClick={toggleMenu}>
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           {isOpen ? <FiX /> : <FiMenu />}
         </button>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
