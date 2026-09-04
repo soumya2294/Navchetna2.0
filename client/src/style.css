@@ -6,8 +6,8 @@
 }
 
 body {
-  background-color: #0f172a;
-  color: #f8fafc;
+  background-color: #dfe3ed;
+  color: hsl(0, 79%, 48%);
 }
 
 .main-content {
@@ -17,7 +17,7 @@ body {
 }
 
 .fitness-navbar {
-  background-color: #1e293b;
+  background-color: #be41a7;
   border-bottom: 1px solid #334155;
   position: sticky;
   top: 0;
@@ -62,7 +62,7 @@ body {
 }
 
 .nav-link {
-  color: #94a3b8;
+  color: #000000;
   text-decoration: none;
   font-weight: 700;
   font-size: 13px;
@@ -94,7 +94,7 @@ body {
 }
 
 .login-link:hover {
-  color: #f97316;
+  color: #858f89;
 }
 
 .signup-btn {
@@ -115,7 +115,7 @@ body {
 .divider {
   width: 1px;
   height: 20px;
-  background-color: #475569;
+  background-color: #010102;
   margin: 0 4px;
 }
 
@@ -129,13 +129,13 @@ body {
 }
 
 .icon-btn {
-  color: #cbd5e1;
+  color: #edebeb;
   font-size: 18px;
   transition: color 0.2s;
 }
 
 .icon-btn:hover {
-  color: #ffffff;
+  color: #a59e9e;
 }
 
 .notification-badge {
@@ -152,7 +152,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 2px solid #1e293b;
+  border: 2px solid #323946;
 }
 
 .profile-menu {
