@@ -1,0 +1,240 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+.main-content {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.fitness-navbar {
+  background-color: #1e293b;
+  border-bottom: 1px solid #334155;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+}
+
+.nav-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-logo {
+  text-decoration: none;
+}
+
+.brand-text {
+  color: #f8fafc;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+.brand-accent {
+  color: #f97316;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.nav-link {
+  color: #94a3b8;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #f8fafc;
+}
+
+.active-link {
+  color: #f97316;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.login-link {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.login-link:hover {
+  color: #f97316;
+}
+
+.signup-btn {
+  background-color: #f97316;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.signup-btn:hover {
+  background-color: #ea580c;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background-color: #475569;
+  margin: 0 4px;
+}
+
+.notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.icon-btn {
+  color: #cbd5e1;
+  font-size: 18px;
+  transition: color 0.2s;
+}
+
+.icon-btn:hover {
+  color: #ffffff;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  height: 14px;
+  width: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #1e293b;
+}
+
+.profile-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+}
+
+.profile-menu:hover {
+  background-color: #334155;
+}
+
+.avatar {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dropdown-icon {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #f8fafc;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.mobile-auth {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .nav-menu {
+    position: absolute;
+    top: 56px;
+    left: -100%;
+    flex-direction: column;
+    background-color: #1e293b;
+    width: 100%;
+    text-align: center;
+    transition: 0.3s ease-in-out;
+    padding: 20px 0;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+    border-bottom: 1px solid #334155;
+  }
+  
+  .nav-menu.active {
+    left: 0;
+  }
+  
+  .nav-link {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 0;
+    font-size: 15px;
+  }
+  
+  .mobile-auth {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
