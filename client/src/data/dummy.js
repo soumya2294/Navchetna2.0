@@ -60,7 +60,7 @@ export const posts = [
   },
   {
     id: 3,
-    username: "soumya.moves",
+    username: "sachin.moves",
     location: "Training Zone",
     avatar: "https://i.pravatar.cc/150?img=33",
     image:
