@@ -3,7 +3,7 @@ import { FiBell, FiMenu, FiX, FiChevronDown, FiCheck } from 'react-icons/fi'
 import { FaFire } from 'react-icons/fa'
 import { useState } from 'react'
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isStreakOpen, setIsStreakOpen] = useState(false)
   const location = useLocation()
@@ -19,15 +19,9 @@ const Navbar = ({ toggleSidebar }) => {
   return (
     <header className="fitness-navbar">
       <div className="nav-container">
-        
-        <div className="brand-group">
-          <button className="sidebar-trigger" onClick={toggleSidebar}>
-            <FiMenu size={24} />
-          </button>
-          <Link to="/" className="brand-logo" onClick={closeMenu}>
-            <span className="brand-text">NAVCHETNA <span className="brand-accent">2.0</span></span>
-          </Link>
-        </div>
+        <Link to="/" className="brand-logo" onClick={closeMenu}>
+          <span className="brand-text">NAVCHETNA <span className="brand-accent">2.0</span></span>
+        </Link>
 
         <nav className={`nav-menu ${isOpen ? 'active' : ''}`}>
           {items.map(item => (
@@ -53,6 +47,7 @@ const Navbar = ({ toggleSidebar }) => {
 
           <div className="divider desktop-only"></div>
 
+          {/* New Interactive Streak Container */}
           <div className="streak-container">
             <div className="streak-indicator" onClick={() => setIsStreakOpen(!isStreakOpen)}>
               <div className="streak-icon-wrapper">
