@@ -5,12 +5,16 @@ import {
 } from "react-icons/fi"
 
 const StoryViewer = ({
-  stories,
+  stories = [],
   currentStory,
   onClose,
   onNext,
   onPrevious,
 }) => {
+
+  if (!currentStory) {
+    return null
+  }
 
   const currentIndex = stories.findIndex(
     (story) => story.id === currentStory.id
@@ -29,7 +33,9 @@ const StoryViewer = ({
             <div
               key={story.id}
               className={`story-progress ${
-                index <= currentIndex ? "active-progress" : ""
+                index <= currentIndex
+                  ? "active-progress"
+                  : ""
               }`}
             />
           ))}
@@ -40,8 +46,10 @@ const StoryViewer = ({
         {/* Close Button */}
 
         <button
+          type="button"
           className="story-close-btn"
           onClick={onClose}
+          aria-label="Close story"
         >
           <FiX />
         </button>
@@ -50,14 +58,16 @@ const StoryViewer = ({
         {/* Previous */}
 
         <button
+          type="button"
           className="story-nav-btn previous"
           onClick={onPrevious}
+          aria-label="Previous story"
         >
           <FiChevronLeft />
         </button>
 
 
-        {/* Image */}
+        {/* Story Image */}
 
         <img
           src={currentStory.image}
@@ -66,7 +76,7 @@ const StoryViewer = ({
         />
 
 
-        {/* User Info */}
+        {/* User Information */}
 
         <div className="story-user-info">
 
@@ -75,25 +85,29 @@ const StoryViewer = ({
             alt={currentStory.username}
           />
 
-          <span>{currentStory.username}</span>
+          <span>
+            {currentStory.username}
+          </span>
 
         </div>
 
 
         {/* Caption */}
 
-        <div className="story-caption">
-
-          <p>{currentStory.caption}</p>
-
-        </div>
+        {currentStory.caption && (
+          <div className="story-caption">
+            <p>{currentStory.caption}</p>
+          </div>
+        )}
 
 
         {/* Next */}
 
         <button
+          type="button"
           className="story-nav-btn next"
           onClick={onNext}
+          aria-label="Next story"
         >
           <FiChevronRight />
         </button>
