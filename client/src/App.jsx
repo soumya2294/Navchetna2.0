@@ -1,26 +1,31 @@
 import { Routes, Route } from 'react-router-dom'
+import { useState } from 'react'
 import Navbar from './components/navbar'
+import Sidebar from './components/Sidebar'
 import Home from './pages/Home'
-import Dashboard from './pages/Dashboard'
-import Profile from './pages/Profile'
-import Login from './pages/Login'
+import Login from './pages/login'
 import Signup from './pages/Signup'
+import Profile from './pages/Profile'
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
+
   return (
-    <div>
-      <Navbar /> 
+    <>
+      <Navbar toggleSidebar={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} closeSidebar={() => setIsSidebarOpen(false)} />
       
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/Signup" element={<Signup />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </main>
-    </div>
+    </>
   )
 }
 
