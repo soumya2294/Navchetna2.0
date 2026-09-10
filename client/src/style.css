@@ -1,15 +1,17 @@
 /* =========================================================
    NAVCHETNA 2.0 — GLOBAL STYLES
 ========================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
-
 :root {
-  /* ENERGETIC ORANGE THEME */
   --primary: #ff6b35;
   --primary-dark: #e8501b;
   --primary-light: #fff1eb;
   --primary-soft: #ffd9cc;
+
+  --pink: var(--primary);
+  --pink-light: var(--primary-light);
+  --pink-soft: var(--primary-soft);
+  --pink-dark: var(--primary-dark);
 
   --white: #ffffff;
   --cream: #fffaf7;
@@ -109,6 +111,12 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 /* =========================================================
    HAMBURGER MENU
@@ -3274,6 +3282,107 @@ a {
   flex-shrink: 0;
 
   position: relative;
+}
+
+.profile-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.profile-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.profile-toggle:hover {
+  background: var(--primary-light);
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-email {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-menu-popup {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 12px;
+  right: 12px;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+}
+
+.popup-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.popup-item:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.popup-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 4px 0;
+}
+
+.logout-btn {
+  width: 100%;
+  color: #ef476f;
+}
+
+.logout-btn:hover {
+  background: #fff0f3;
+  color: #d90429;
 }
 
 /* =========================================================
