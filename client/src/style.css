@@ -3743,54 +3743,106 @@ a {
 ========================================================= */
 
 .performance-stats-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 20px;
 }
 
 
 .perf-stat-box {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #fafafa;
+  justify-content: center;
+
+  min-height: 165px;
+  padding: 20px;
+
+  border-radius: 14px;
+
+  background: #ffffff;
   border: 1px solid var(--border-light);
+
+  text-align: center;
+
+  transition: 0.3s ease;
 }
 
 
+.perf-stat-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ICON */
+
 .perf-icon-wrapper {
-  width: 38px;
-  height: 38px;
+  width: auto;
+  height: auto;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  border-radius: 10px;
-  background: var(--primary-light);
+
+  margin-bottom: 16px;
+
+  background: transparent;
+
   color: var(--primary);
-  font-size: 18px;
+
+  font-size: 28px;
 }
 
+
+/* TEXT CONTAINER */
 
 .perf-stat-box > div:last-child {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
+
+/* VALUE */
 
 .perf-val {
-  font-size: 16px;
+  font-size: 28px;
   font-weight: 750;
+
   color: var(--text);
+
+  line-height: 1;
 }
 
 
+/* LABEL */
+
 .perf-lbl {
-  margin-top: 2px;
-  font-size: 11px;
+  margin-top: 10px;
+
+  font-size: 15px;
+  font-weight: 500;
+
   color: var(--text-secondary);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .performance-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .perf-stat-box {
+    min-height: 120px;
+  }
+
 }
 
 
@@ -4688,4 +4740,835 @@ a {
     padding: 18px;
   }
 
+}
+/* =========================================================
+   TRAINING ZONE
+========================================================= */
+
+.training-page {
+
+  width: 100%;
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 40px 25px;
+
+}
+
+
+.training-page-header {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 35px;
+
+}
+
+
+.training-page-header h1 {
+
+  font-size: 30px;
+
+  font-weight: 750;
+
+  color: var(--text);
+
+}
+
+
+.training-page-header p {
+
+  margin-top: 7px;
+
+  color: var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   DASHBOARD PERFORMANCE
+========================================================= */
+
+.dashboard-section {
+
+  background: white;
+
+  border: 1px solid var(--border-light);
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+}
+
+
+.dashboard-section > h2 {
+
+  margin-bottom: 22px;
+
+}
+
+
+.dashboard-performance-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 18px;
+
+}
+
+
+.dashboard-perf-card {
+
+  min-height: 120px;
+
+  padding: 15px;
+
+  border-radius: 16px;
+
+  border: 1px solid var(--border-light);
+
+  background: #fafafa;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+}
+
+
+.dashboard-perf-card svg {
+
+  font-size: 22px;
+
+  color: var(--primary);
+
+  margin-bottom: 8px;
+
+}
+
+
+.dashboard-perf-card h2 {
+
+  font-size: 24px;
+
+  color: var(--text);
+
+}
+
+
+.dashboard-perf-card span {
+
+  margin-top: 5px;
+
+  color: var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   WORKOUTS
+========================================================= */
+
+.add-workout-btn {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 11px 18px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: var(--primary);
+
+  color: white;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+}
+
+
+.workout-summary-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 18px;
+
+  margin-bottom: 30px;
+
+}
+
+
+.workout-summary-card {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 22px;
+
+  background: white;
+
+  border: 1px solid var(--border-light);
+
+  border-radius: 16px;
+
+}
+
+
+.workout-summary-card > svg {
+
+  font-size: 25px;
+
+  color: var(--primary);
+
+}
+
+
+.workout-summary-card h2 {
+
+  font-size: 22px;
+
+  color: var(--text);
+
+}
+
+
+.workout-summary-card span {
+
+  font-size: 13px;
+
+  color: var(--text-secondary);
+
+}
+
+
+.workouts-container {
+
+  padding: 25px;
+
+  background: white;
+
+  border-radius: 18px;
+
+  border: 1px solid var(--border-light);
+
+}
+
+
+.workouts-container h2 {
+
+  margin-bottom: 20px;
+
+}
+
+
+.workouts-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+}
+
+
+.workout-card {
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 18px;
+
+  border: 1px solid var(--border-light);
+
+  border-radius: 14px;
+
+}
+
+
+.workout-icon {
+
+  width: 45px;
+
+  height: 45px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: var(--primary-light);
+
+  color: var(--primary);
+
+}
+
+
+.workout-info {
+
+  margin-left: 15px;
+
+  flex: 1;
+
+}
+
+
+.workout-info h3 {
+
+  color: var(--text);
+
+}
+
+
+.workout-info span {
+
+  font-size: 13px;
+
+  color: var(--text-secondary);
+
+}
+
+
+.workout-details {
+
+  display: flex;
+
+  gap: 25px;
+
+  color: var(--text-secondary);
+
+}
+
+
+.workout-date {
+
+  width: 100px;
+
+  text-align: right;
+
+  color: var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   LEADERBOARD
+========================================================= */
+
+.leaderboard-header {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 35px;
+
+}
+
+
+.leaderboard-header h1 {
+
+  font-size: 30px;
+
+  color: var(--text);
+
+}
+
+
+.leaderboard-header p {
+
+  margin-top: 7px;
+
+  color: var(--text-secondary);
+
+}
+
+
+.leaderboard-main-icon {
+
+  font-size: 40px;
+
+  color: var(--primary);
+
+}
+
+
+/* =========================================================
+   TOP 3 PODIUM - SPORTY & MODERN 
+========================================================= */
+.top-athletes {
+  display: flex;
+  align-items: flex-end; 
+  justify-content: center;
+  gap: 24px;
+  margin-top: 60px; /* Added margin so avatars have room to pop out */
+  margin-bottom: 50px;
+  height: 300px; /* Taller for a dramatic stance */
+}
+
+/* Base Card - Sleek with hover animations */
+.top-athlete {
+  position: relative; /* Crucial for overlapping the avatar */
+  text-align: center;
+  padding: 50px 20px 25px; /* Extra top padding to clear the avatar */
+  border-radius: 24px;
+  width: 30%;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.top-athlete:hover {
+  transform: translateY(-8px) scale(1.02); /* Sporty lifting effect on hover */
+}
+
+/* Avatar - Popping out of the card */
+.top-athlete img {
+  position: absolute;
+  top: -45px; /* Overlaps the top edge */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+/* Medal placed floating perfectly over the avatar */
+.rank-number {
+  position: absolute;
+  top: -65px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 26px;
+  z-index: 11;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+/* Bold typography */
+.top-athlete h3 {
+  font-size: 18px;
+  font-weight: 800; /* Extra bold */
+  letter-spacing: -0.5px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+/* XP Pill Badge */
+.top-athlete span {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.25); /* Frosted glass effect */
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 14px;
+  backdrop-filter: blur(4px);
+}
+
+/* 🥇 1ST PLACE - Vibrant Gold + Colored Glow */
+.podium-rank-1 {
+  order: 2; 
+  height: 280px;
+  background: linear-gradient(135deg, #FFC700 0%, #FF8A00 100%);
+  color: white; 
+  z-index: 2;
+  /* Colored drop shadow + inner light reflection */
+  box-shadow: 0 20px 40px rgba(255, 138, 0, 0.35), inset 0 2px 0 rgba(255,255,255,0.4);
+}
+
+/* 🥈 2ND PLACE - Ice Silver + Colored Glow */
+.podium-rank-2 {
+  order: 1; 
+  height: 230px;
+  background: linear-gradient(135deg, #F1F5F9 0%, #CBD5E1 100%);
+  color: #1E293B; /* Dark slate text for contrast */
+  box-shadow: 0 20px 40px rgba(148, 163, 184, 0.25), inset 0 2px 0 rgba(255,255,255,0.8);
+}
+
+/* 🥉 3RD PLACE - Rich Bronze + Colored Glow */
+.podium-rank-3 {
+  order: 3; 
+  height: 200px;
+  background: linear-gradient(135deg, #F59E0B 0%, #B45309 100%);
+  color: white;
+  box-shadow: 0 20px 40px rgba(180, 83, 9, 0.3), inset 0 2px 0 rgba(255,255,255,0.3);
+}
+
+.rankings-container {
+
+  background: white;
+
+  padding: 25px;
+
+  border-radius: 18px;
+
+  border: 1px solid var(--border-light);
+
+}
+
+
+.rankings-container h2 {
+
+  margin-bottom: 20px;
+
+}
+
+
+.rankings-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 12px;
+
+}
+
+
+.ranking-card {
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 15px;
+
+  border: 1px solid var(--border-light);
+
+  border-radius: 14px;
+
+}
+
+
+.athlete-rank {
+
+  width: 45px;
+
+  font-weight: 700;
+
+  color: var(--primary);
+
+}
+
+
+.ranking-avatar {
+
+  width: 45px;
+
+  height: 45px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+}
+
+
+.ranking-user {
+
+  flex: 1;
+
+  margin-left: 15px;
+
+}
+
+
+.ranking-user h3 {
+
+  color: var(--text);
+
+}
+
+
+.ranking-user span {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 4px;
+
+  font-size: 12px;
+
+  color: var(--text-secondary);
+
+}
+
+
+.ranking-points {
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  color: var(--text);
+
+}
+
+
+.ranking-points span {
+
+  font-size: 11px;
+
+  color: var(--text-secondary);
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .dashboard-performance-grid,
+  .workout-summary-grid,
+  .top-athletes {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .training-page {
+
+    padding: 25px 15px;
+
+  }
+
+
+  .training-page-header {
+
+    align-items: flex-start;
+
+    gap: 15px;
+
+  }
+
+
+  .workout-card {
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+  }
+
+
+  .workout-details {
+
+    margin-left: 60px;
+
+  }
+
+
+  .workout-date {
+
+    width: auto;
+
+  }
+
+}
+/* =========================================================
+   MAIN GRID & DAILY GOALS (NEW STYLES)
+========================================================= */
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns side-by-side */
+  gap: 20px;
+}
+
+.dashboard-card {
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  background: #fafafa;
+}
+
+.card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+
+.card-heading .small-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.card-heading h2 {
+  font-size: 20px;
+  color: var(--text);
+  margin: 0;
+}
+
+.card-heading svg {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+/* Circular Progress Bar */
+.progress-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  /* This creates a visual 85% fill using your primary color */
+  background: conic-gradient(var(--primary) 85%, var(--border-light) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 25px auto;
+}
+
+.progress-inner {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-inner strong {
+  font-size: 28px;
+  color: var(--text);
+}
+
+.progress-inner span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Goal Text Details underneath the circle */
+.goal-details {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid var(--border-light);
+  padding-top: 20px;
+}
+
+.goal-details div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.goal-details strong {
+  font-size: 18px;
+  color: var(--text);
+}
+
+.goal-details span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Weekly Activity Bar Chart */
+.weekly-bars {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 200px;
+  padding-top: 20px;
+}
+
+.weekly-bars > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.bar {
+  width: 14px;
+  background: var(--primary);
+  border-radius: 8px;
+}
+
+.weekly-bars p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+/* =========================================================
+   WORKOUT BUTTONS & STATES
+========================================================= */
+.workout-start-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  margin-left: 25px;
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.workout-start-button:hover {
+  background: var(--primary-light);
+}
+
+.workout-completed {
+  background: #f0fff4; /* Light green background when completed */
+  border-color: #c6f6d5;
+}
+
+.completed-button {
+  background: #48bb78;
+  color: white;
+  border-color: #48bb78;
+}
+
+.completed-button:hover {
+  background: #38a169;
+  color: white;
 }
