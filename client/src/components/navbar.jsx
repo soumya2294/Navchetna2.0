@@ -11,7 +11,6 @@ import { FaFire } from 'react-icons/fa'
 
 import { useState, useEffect } from 'react'
 
-
 const Navbar = ({ toggleSidebar }) => {
 
   const [isOpen, setIsOpen] = useState(false)
@@ -19,13 +18,10 @@ const Navbar = ({ toggleSidebar }) => {
   const [isStreakOpen, setIsStreakOpen] = useState(false)
 
   const [completedDays, setCompletedDays] = useState([])
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const location = useLocation()
-
-
-  /* =====================================================
-     LOAD COMPLETED DAYS FROM LOCAL STORAGE
-  ===================================================== */
 
   useEffect(() => {
 
@@ -37,10 +33,13 @@ const Navbar = ({ toggleSidebar }) => {
 
   }, [])
 
-
-  /* =====================================================
-     DATE INFORMATION
-  ===================================================== */
+  useEffect(() => {
+    
+    const token = localStorage.getItem('navchetnaToken')
+    
+    setIsLoggedIn(!!token)
+    
+  }, [location])
 
   const today = new Date()
 
@@ -50,31 +49,17 @@ const Navbar = ({ toggleSidebar }) => {
 
   const todayDate = today.getDate()
 
-
-  /* =====================================================
-     MONTH INFORMATION
-  ===================================================== */
-
   const daysInMonth = new Date(
     currentYear,
     currentMonth + 1,
     0
   ).getDate()
 
-
   const firstDayOfMonth = new Date(
     currentYear,
     currentMonth,
     1
   ).getDay()
-
-
-  /* =====================================================
-     CREATE DATE ID
-
-     Example:
-     2026-09-09
-  ===================================================== */
 
   const createDateId = (day) => {
 
@@ -88,34 +73,21 @@ const Navbar = ({ toggleSidebar }) => {
 
   }
 
-
-  /* =====================================================
-     TODAY STATUS
-  ===================================================== */
-
   const todayId = createDateId(todayDate)
 
   const isTodayCompleted =
     completedDays.includes(todayId)
 
-
-  /* =====================================================
-     CHECK IN TODAY
-  ===================================================== */
-
   const handleCheckIn = () => {
 
     if (isTodayCompleted) return
-
 
     const updatedDays = [
       ...completedDays,
       todayId
     ]
 
-
     setCompletedDays(updatedDays)
-
 
     localStorage.setItem(
       "navchetnaCompletedDays",
@@ -124,24 +96,11 @@ const Navbar = ({ toggleSidebar }) => {
 
   }
 
-
-  /* =====================================================
-     CALCULATE CURRENT STREAK
-
-     Counts consecutive completed days.
-  ===================================================== */
-
   const calculateStreak = () => {
 
     let streak = 0
 
     const date = new Date()
-
-
-    /*
-      If today isn't completed,
-      start counting from yesterday.
-    */
 
     if (!completedDays.includes(todayId)) {
 
@@ -151,25 +110,20 @@ const Navbar = ({ toggleSidebar }) => {
 
     }
 
-
     while (true) {
 
       const year = date.getFullYear()
-
 
       const month = String(
         date.getMonth() + 1
       ).padStart(2, "0")
 
-
       const day = String(
         date.getDate()
       ).padStart(2, "0")
 
-
       const dateId =
         `${year}-${month}-${day}`
-
 
       if (completedDays.includes(dateId)) {
 
@@ -187,19 +141,12 @@ const Navbar = ({ toggleSidebar }) => {
 
     }
 
-
     return streak
 
   }
 
-
   const currentStreak =
     calculateStreak()
-
-
-  /* =====================================================
-     NAVIGATION
-  ===================================================== */
 
   const items = [
     {
@@ -212,13 +159,11 @@ const Navbar = ({ toggleSidebar }) => {
     }
   ]
 
-
   const toggleMenu = () => {
 
     setIsOpen(!isOpen)
 
   }
-
 
   const closeMenu = () => {
 
@@ -226,17 +171,11 @@ const Navbar = ({ toggleSidebar }) => {
 
   }
 
-
   return (
 
     <header className="fitness-navbar">
 
       <div className="nav-container">
-
-
-        {/* =================================================
-            BRAND
-        ================================================= */}
 
         <div className="brand-group">
 
@@ -246,7 +185,6 @@ const Navbar = ({ toggleSidebar }) => {
           >
             <FiMenu size={24} />
           </button>
-
 
           <Link
             to="/"
@@ -267,12 +205,6 @@ const Navbar = ({ toggleSidebar }) => {
           </Link>
 
         </div>
-
-
-
-        {/* =================================================
-            NAVIGATION MENU
-        ================================================= */}
 
         <nav
           className={`nav-menu ${
@@ -304,84 +236,61 @@ const Navbar = ({ toggleSidebar }) => {
 
           ))}
 
+          {!isLoggedIn && (
+            <div className="mobile-auth">
 
+              <Link
+                to="/login"
+                className="login-link"
+                onClick={closeMenu}
+              >
 
-          {/* MOBILE LOGIN / SIGNUP */}
+                Login
 
-          <div className="mobile-auth">
+              </Link>
 
-            <Link
-              to="/login"
-              className="login-link"
-              onClick={closeMenu}
-            >
+              <Link
+                to="/signup"
+                className="signup-btn"
+                onClick={closeMenu}
+              >
 
-              Login
+                Sign Up
 
-            </Link>
+              </Link>
 
-
-            <Link
-              to="/signup"
-              className="signup-btn"
-              onClick={closeMenu}
-            >
-
-              Sign Up
-
-            </Link>
-
-          </div>
+            </div>
+          )}
 
         </nav>
 
-
-
-        {/* =================================================
-            HEADER ACTIONS
-        ================================================= */}
-
         <div className="header-actions">
 
+          {!isLoggedIn && (
+            <>
+              <Link
+                to="/login"
+                className="login-link desktop-only"
+              >
 
-          {/* LOGIN */}
+                Login
 
-          <Link
-            to="/login"
-            className="login-link desktop-only"
-          >
+              </Link>
 
-            Login
+              <Link
+                to="/signup"
+                className="signup-btn desktop-only"
+              >
 
-          </Link>
+                Sign Up
 
+              </Link>
 
-
-          {/* SIGN UP */}
-
-          <Link
-            to="/signup"
-            className="signup-btn desktop-only"
-          >
-
-            Sign Up
-
-          </Link>
-
-
-
-          <div className="divider desktop-only"></div>
-
-
-
-          {/* =================================================
-              STREAK
-          ================================================= */}
+              <div className="divider desktop-only"></div>
+            </>
+          )}
 
           <div className="streak-container">
-
-
-            {/* STREAK INDICATOR */}
 
             <div
               className="streak-indicator"
@@ -396,7 +305,6 @@ const Navbar = ({ toggleSidebar }) => {
 
               </div>
 
-
               <span className="streak-count">
 
                 {currentStreak}
@@ -405,18 +313,9 @@ const Navbar = ({ toggleSidebar }) => {
 
             </div>
 
-
-
-            {/* =================================================
-                STREAK POPUP
-            ================================================= */}
-
             {isStreakOpen && (
 
               <div className="streak-popup">
-
-
-                {/* CLOSE */}
 
                 <button
                   className="close-popup"
@@ -428,10 +327,6 @@ const Navbar = ({ toggleSidebar }) => {
                   <FiX />
 
                 </button>
-
-
-
-                {/* HEADER */}
 
                 <div className="streak-popup-header">
 
@@ -445,10 +340,6 @@ const Navbar = ({ toggleSidebar }) => {
 
                 </div>
 
-
-
-                {/* SUBTEXT */}
-
                 <p className="streak-subtext">
 
                   {isTodayCompleted
@@ -460,12 +351,6 @@ const Navbar = ({ toggleSidebar }) => {
                   }
 
                 </p>
-
-
-
-                {/* =================================================
-                    MONTH HEADER
-                ================================================= */}
 
                 <div className="calendar-header">
 
@@ -483,12 +368,6 @@ const Navbar = ({ toggleSidebar }) => {
                   </h4>
 
                 </div>
-
-
-
-                {/* =================================================
-                    WEEK DAYS
-                ================================================= */}
 
                 <div className="calendar-weekdays">
 
@@ -508,16 +387,7 @@ const Navbar = ({ toggleSidebar }) => {
 
                 </div>
 
-
-
-                {/* =================================================
-                    CALENDAR
-                ================================================= */}
-
                 <div className="streak-calendar">
-
-
-                  {/* EMPTY DAYS */}
 
                   {Array.from({
 
@@ -535,10 +405,6 @@ const Navbar = ({ toggleSidebar }) => {
 
                   ))}
 
-
-
-                  {/* MONTH DAYS */}
-
                   {Array.from(
 
                     { length: daysInMonth },
@@ -547,22 +413,17 @@ const Navbar = ({ toggleSidebar }) => {
 
                   ).map((day) => {
 
-
                     const dateId =
                       createDateId(day)
-
 
                     const isCompleted =
                       completedDays.includes(dateId)
 
-
                     const isToday =
                       day === todayDate
 
-
                     const isFuture =
                       day > todayDate
-
 
                     return (
 
@@ -596,7 +457,6 @@ const Navbar = ({ toggleSidebar }) => {
 
                       >
 
-
                         {isCompleted
 
                           ? <FiCheck size={15} />
@@ -605,31 +465,21 @@ const Navbar = ({ toggleSidebar }) => {
 
                         }
 
-
                       </div>
 
                     )
 
                   })}
 
-
                 </div>
 
-
-
-                {/* =================================================
-                    MILESTONE
-                ================================================= */}
-
                 <div className="streak-milestone">
-
 
                   <p className="milestone-label">
 
                     Next milestone
 
                   </p>
-
 
                   <h4>
 
@@ -651,14 +501,7 @@ const Navbar = ({ toggleSidebar }) => {
 
                   </h4>
 
-
                 </div>
-
-
-
-                {/* =================================================
-                    CHECK IN BUTTON
-                ================================================= */}
 
                 <button
 
@@ -684,58 +527,41 @@ const Navbar = ({ toggleSidebar }) => {
 
                 </button>
 
-
               </div>
 
             )}
 
-
           </div>
 
+          {isLoggedIn && (
+            <div className="notification-wrapper">
 
+              <FiBell className="icon-btn" />
 
-          {/* =================================================
-              NOTIFICATIONS
-          ================================================= */}
+              <span className="notification-badge">
 
-          <div className="notification-wrapper">
+                2
 
-            <FiBell className="icon-btn" />
+              </span>
 
-            <span className="notification-badge">
+            </div>
+          )}
 
-              2
+          {isLoggedIn && (
+            <div className="profile-menu">
 
-            </span>
+              <img
+                src="https://i.pravatar.cc/150?img=11"
+                alt="User"
+                className="avatar"
+              />
 
-          </div>
+              <FiChevronDown className="dropdown-icon" />
 
-
-
-          {/* =================================================
-              PROFILE
-          ================================================= */}
-
-          <div className="profile-menu">
-
-            <img
-              src="https://i.pravatar.cc/150?img=11"
-              alt="User"
-              className="avatar"
-            />
-
-            <FiChevronDown className="dropdown-icon" />
-
-          </div>
-
+            </div>
+          )}
 
         </div>
-
-
-
-        {/* =================================================
-            MOBILE MENU
-        ================================================= */}
 
         <button
           className="mobile-menu-btn"
@@ -752,7 +578,6 @@ const Navbar = ({ toggleSidebar }) => {
 
         </button>
 
-
       </div>
 
     </header>
@@ -760,6 +585,5 @@ const Navbar = ({ toggleSidebar }) => {
   )
 
 }
-
 
 export default Navbar

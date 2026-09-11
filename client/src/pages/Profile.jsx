@@ -488,7 +488,7 @@ const Profile = () => {
 
           <div className="tags-container">
 
-            {profileData.disciplines.map(
+            {profileData.disciplines?.map(
 
               (discipline, index) => (
 
