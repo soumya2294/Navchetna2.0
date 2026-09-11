@@ -18,12 +18,12 @@ import {
 
 
 const defaultProfile = {
-  name: "Soumya",
+  name: "ISHOWSPEED",
   title: "Hybrid Athlete & Marathon Runner",
   location: "Budge Budge, West Bengal",
   age: "20",
   gender: "Male",
-  avatar: "https://i.pravatar.cc/150?img=11",
+  avatar: "https://static-cdn.jtvnw.net/jtv_user_pictures/46a38d3a-a39c-4c43-ac12-c331b1c469c2-profile_image-300x300.png",
 
   posts: "42",
   followers: "2,985",
