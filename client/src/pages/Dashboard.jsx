@@ -48,7 +48,7 @@ function Dashboard() {
 
         <button
           className="add-workout-btn"
-          onClick={() => navigate('/workouts')}
+          onClick={() => navigate('/ai-coach')}
         >
           Start Workout
           <FiArrowRight />
