@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/authRoutes.js'
 import passport from 'passport'
 import './config/passport.js'
+import postRoutes from './routes/postRoutes.js'
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/navchetna')
   .catch((err) => console.log('Database connection error:', err))
 
 app.use('/api/auth', authRoutes)
+app.use('/api/posts', postRoutes)
 
 app.get('/', (req, res) => {
   res.send('Navchetna 2.0 API is running...')
