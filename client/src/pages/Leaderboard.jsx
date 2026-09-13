@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   FiAward,
   FiTrendingUp,
@@ -6,53 +6,45 @@ import {
 } from 'react-icons/fi'
 
 function Leaderboard() {
+  const [myXP, setMyXP] = useState(1240);
 
-  const athletes = [
-    {
-      rank: 1,
-      name: 'ISHOWSPEED',
-      xp: '2,450',
-      streak: '🔥 12 Day Streak',
-      avatar: 'https://i.pravatar.cc/150?img=11'
-    },
-    {
-      rank: 2,
-      name: 'Alex Johnson',
-      xp: '2,210',
-      streak: '🔥 10 Day Streak',
-      avatar: 'https://i.pravatar.cc/150?img=12'
-    },
-    {
-      rank: 3,
-      name: 'Sarah Williams',
-      xp: '1,980',
-      streak: '🔥 8 Day Streak',
-      avatar: 'https://i.pravatar.cc/150?img=47'
-    },
-    {
-      rank: 4,
-      name: 'Mike Anderson',
-      xp: '1,750',
-      streak: '🔥 7 Day Streak',
-      avatar: 'https://i.pravatar.cc/150?img=53'
-    },
-    {
-      rank: 5,
-      name: 'Athlete 05',
-      xp: '1,540',
-      streak: '🔥 5 Day Streak',
-      avatar: 'https://i.pravatar.cc/150?img=33'
+  useEffect(() => {
+    const saved = localStorage.getItem('userXP') || '1240';
+    if (saved) {
+      setMyXP(parseInt(saved, 10));
     }
-  ]
+  }, []);
+
+ const baseAthletes = [
+    { name: 'IShowSPEED', xp: 2450, streak: '🔥 12 Day Streak', avatar: 'https://i.pravatar.cc/150?img=11' },
+    { name: 'Alex Johnson', xp: 2210, streak: '🔥 10 Day Streak', avatar: 'https://i.pravatar.cc/150?img=12' },
+    { name: 'Sarah Williams', xp: 1980, streak: '🔥 8 Day Streak', avatar: 'https://i.pravatar.cc/150?img=47' },
+    { name: 'Mike Anderson', xp: 1750, streak: '🔥 7 Day Streak', avatar: 'https://i.pravatar.cc/150?img=53' },
+    { name: 'Athlete 05', xp: 1540, streak: '🔥 5 Day Streak', avatar: 'https://i.pravatar.cc/150?img=33' },
+    { name: 'David Miller', xp: 1400, streak: '🔥 4 Day Streak', avatar: 'https://i.pravatar.cc/150?img=60' },
+    { name: 'Emma Watson', xp: 1300, streak: '🔥 3 Day Streak', avatar: 'https://i.pravatar.cc/150?img=45' },
+    { name: 'You', xp: myXP, streak: '🔥 Active', avatar: 'https://i.pravatar.cc/150?img=68', isUser: true }
+  ];
 
   const getMedal = (rank) => {
-    if (rank === 1) return '🥇'
-    if (rank === 2) return '🥈'
-    if (rank === 3) return '🥉'
-    return `#${rank}`
-  }
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return `#${rank}`;
+  };
 
-  // Split athletes into Top 3 and the rest for your CSS layout
+  // Sort highest XP to lowest, assign ranks, and format XP for display
+  const athletes = [...baseAthletes]
+    .sort((a, b) => b.xp - a.xp)
+    .map((athlete, index) => ({
+      ...athlete,
+      rank: index + 1,
+      xp: athlete.xp.toLocaleString()
+    }));
+
+  // Find your real-time rank position
+ const myRank = athletes.find((a) => a.name === 'You')?.rank || 1;
+
   const topThree = athletes.slice(0, 3);
   const restOfAthletes = athletes.slice(3);
 
@@ -73,7 +65,7 @@ function Leaderboard() {
         <div className="workout-summary-card">
           <FiAward />
           <div>
-            <h2>#12</h2>
+            <h2>#{myRank}</h2>
             <span>Your Rank</span>
           </div>
         </div>
@@ -81,7 +73,7 @@ function Leaderboard() {
         <div className="workout-summary-card">
           <FiZap />
           <div>
-            <h2>1,240 XP</h2>
+            <h2>{myXP.toLocaleString()} XP</h2>
             <span>Your Points</span>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { useState } from 'react'
+import AIWorkoutCoach from './components/AIWorkoutCoach';
 
 import Navbar from './components/navbar'
 import Sidebar from './components/Sidebar'
@@ -57,7 +58,10 @@ function App() {
             path="/workouts"
             element={<MyWorkouts />}
           />
-
+          <Route
+                path="/ai-coach"
+                element={<AIWorkoutCoach onExit={() => window.history.back()} />}
+              />
           <Route
             path="/leaderboard"
             element={<Leaderboard />}
