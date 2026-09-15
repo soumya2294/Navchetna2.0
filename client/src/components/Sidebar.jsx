@@ -10,8 +10,10 @@ import {
   FiLogOut
 } from 'react-icons/fi'
 import { useState } from 'react'
+import { useProfile } from '../utils/userProfile'
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
+  const { profile, logout } = useProfile()
   const location = useLocation()
   const navigate = useNavigate()
   
@@ -20,8 +22,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   const [isTrainingOpen, setIsTrainingOpen] = useState(trainingRoutes.includes(location.pathname))
 
   const handleLogout = () => {
-    localStorage.removeItem('navchetnaToken')
-    localStorage.removeItem('navchetnaProfile')
+    logout()
     closeSidebar()
     setIsProfileOpen(false)
     navigate('/login')
@@ -179,13 +180,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
               <img
-                src="https://i.pravatar.cc/150?img=11"
-                alt="User"
+                src={profile.avatar}
+                alt={profile.name || "User"}
                 className="avatar"
               />
               <div className="profile-info">
-                <span className="profile-name">Athlete 01</span>
-                <span className="profile-email">athlete@navchetna.com</span>
+                <span className="profile-name">{profile.name || "Athlete"}</span>
+                <span className="profile-email">{profile.title || "Member"}</span>
               </div>
               <FiChevronDown className={`dropdown-icon ${isProfileOpen ? 'rotate' : ''}`} />
             </button>
