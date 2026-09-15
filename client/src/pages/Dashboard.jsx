@@ -6,7 +6,8 @@ import {
   FiTrendingUp,
   FiClock,
   FiArrowRight,
-  FiAward
+  FiAward,
+  FiUsers // 👈 Imported the Users icon for the new button
 } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
@@ -42,7 +43,7 @@ function Dashboard() {
       {/* HEADER */}
       <div className="training-page-header">
         <div>
-          <h1>Good Evening, Athlete! 👋</h1>
+          <h1>Good Afternoon, Athlete!</h1>
           <p>Let's make today's workout count.</p>
         </div>
 
@@ -63,12 +64,8 @@ function Dashboard() {
               className="dashboard-perf-card"
               key={index}
             >
-              {/* CSS expects SVG directly inside the card */}
               {stat.icon}
-              
               <h2>{stat.value}</h2>
-              
-              {/* CSS expects a span here, not a p tag */}
               <span>{stat.label}</span>
             </div>
           ))}
@@ -76,7 +73,6 @@ function Dashboard() {
       </div>
 
       {/* MAIN GRID (Daily Goals & Weekly Activity) */}
-      {/* Note: I wrapped this in your dashboard-section class so it inherits the nice white background and rounded borders! */}
       <div className="dashboard-section" style={{ marginTop: '30px' }}>
         <div className="dashboard-main-grid">
 
@@ -136,7 +132,6 @@ function Dashboard() {
       <div className="dashboard-section" style={{ marginTop: '30px' }}>
         <h2 style={{ marginBottom: '20px' }}>Quick Actions</h2>
         
-        {/* I am applying your workout-summary-grid classes here so they style correctly! */}
         <div className="workout-summary-grid">
           
           <button
@@ -160,6 +155,19 @@ function Dashboard() {
             <div>
               <h2>Leaderboard</h2>
               <span>Check your ranking</span>
+            </div>
+          </button>
+
+          {/* 🚀 NEW CHALLENGE BUTTON HERE */}
+          <button
+            className="workout-summary-card"
+            style={{ textAlign: 'left', cursor: 'pointer' }}
+            onClick={() => navigate('/challenges')}
+          >
+            <FiUsers />
+            <div>
+              <h2>Challenge a Friend</h2>
+              <span>Compete with your buddies</span>
             </div>
           </button>
 

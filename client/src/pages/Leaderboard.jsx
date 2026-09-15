@@ -56,7 +56,7 @@ function Leaderboard() {
         <div>
           <p className="page-tag">TRAINING ZONE</p>
           <h1>Leaderboard 🏆</h1>
-          <p>See who's dominating the Navchetna community.</p>
+          <p>See who's dominating the FITMATES community.</p>
         </div>
       </div>
 
