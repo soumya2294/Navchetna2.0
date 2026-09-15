@@ -45,7 +45,7 @@ function Dashboard() {
         {/* HEADER */}
         <div className="training-page-header">
           <div>
-            <h1>Good Evening, Athlete! 👋</h1>
+            <h1>Good Afteron, Athlete! </h1>
             <p>Let's make today's workout count.</p>
           </div>
 
@@ -172,5 +172,5 @@ function Dashboard() {
   )
 }
 
-// FIX: Export the component so it can be rendered elsewhere
+
 export default Dashboard
