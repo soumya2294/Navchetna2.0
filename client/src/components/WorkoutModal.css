@@ -1,0 +1,176 @@
+}
+/* WORKOUT MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  background: #fbfbfb;
+  width: 92%;
+  max-width: 440px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header-banner {
+  background: #e85942;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+}
+
+.modal-header-banner h3 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.modal-header-banner .nav-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px 18px;
+  max-height: 480px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.muscle-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease;
+}
+
+.muscle-card:hover {
+  transform: translateY(-2px);
+}
+
+.muscle-avatar {
+  width: 52px;
+  height: 52px;
+  background: #f4f4f6;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.muscle-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.muscle-info h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #111;
+}
+
+.exercise-count-badge {
+  background: #111;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.card-chevron {
+  color: #c7c7cc;
+  font-size: 20px;
+}
+
+.exercise-detail-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.target-pill-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.primary-pill {
+  background: #e85942;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.secondary-pill {
+  background: #f0f0f2;
+  color: #333;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rules-list li {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: #444;
+}
+
+.rules-list li span:first-child {
+  color: #e85942;
+  font-weight: bold;
+}
+
+.btn-start-camera {
+  width: 100%;
+  padding: 14px;
+  background: #e85942;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
