@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react'
 import {
   FiActivity,
   FiZap,
@@ -9,12 +9,10 @@ import {
   FiAward
 } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import WorkoutModal from '../components/WorkoutModal';
-import AIWorkoutCoach from '../components/AIWorkoutCoach';
+
 function Dashboard() {
   const navigate = useNavigate()
-const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeWorkout, setActiveWorkout] = useState(null);
+
   const stats = [
     {
       icon: <FiActivity />,
@@ -37,14 +35,7 @@ const [isModalOpen, setIsModalOpen] = useState(false);
       label: 'Day Streak'
     }
   ]
-if (activeWorkout) {
-    return (
-      <AIWorkoutCoach 
-        exerciseData={activeWorkout} 
-        onExit={() => setActiveWorkout(null)} 
-      />
-    );
-  }
+
   return (
     <div className="training-page">
 
@@ -57,7 +48,7 @@ if (activeWorkout) {
 
         <button
           className="add-workout-btn"
-         onClick={() => setIsModalOpen(true)} 
+          onClick={() => navigate('/ai-coach')}
         >
           Start Workout
           <FiArrowRight />
@@ -174,14 +165,7 @@ if (activeWorkout) {
 
         </div>
       </div>
-<WorkoutModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onLaunch={(workout) => {
-          setIsModalOpen(false);
-          setActiveWorkout(workout);
-        }}
-      />
+
     </div>
   )
 }
