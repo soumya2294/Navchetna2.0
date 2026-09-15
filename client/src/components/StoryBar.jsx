@@ -27,7 +27,6 @@ const StoryBar = ({ stories = [], onStoryClick }) => {
 
       <div className="section-header">
         <h2>Stories</h2>
-        <span>See what's happening 🔥</span>
       </div>
 
       <div className="stories-container">

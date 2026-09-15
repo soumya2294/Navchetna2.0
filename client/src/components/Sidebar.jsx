@@ -43,8 +43,8 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
             onClick={closeSidebar}
           >
             <span className="sidebar-brand-text">
-              NAVCHETNA
-              <span className="brand-accent">2.0</span>
+              FIT
+              <span className="brand-accent">MATES</span>
             </span>
           </Link>
 
@@ -155,7 +155,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
             <div className="sidebar-divider"></div>
 
             <div className="sidebar-section">
-              <span className="nav-section-title">NAVCHETNA APP</span>
+              <span className="nav-section-title">FITMATES APP</span>
               
               <Link
                 to="/download"
