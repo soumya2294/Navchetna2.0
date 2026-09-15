@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { DEFAULT_AVATAR, saveStoredProfile } from '../utils/userProfile'
+import { fetchApi, API_BASE_URL } from '../utils/api'
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -20,14 +22,12 @@ const Login = () => {
       const existingProfile = JSON.parse(localStorage.getItem('navchetnaProfile')) || {}
       
       if (!existingProfile.name) {
-        const newProfile = {
-          ...existingProfile,
-          name: "Google Athlete",
-          title: "Fitness Enthusiast",
+        saveStoredProfile({
+          name: "Athlete",
+          title: "",
           location: "",
-          avatar: "https://i.pravatar.cc/150?img=11",
-        }
-        localStorage.setItem('navchetnaProfile', JSON.stringify(newProfile))
+          avatar: DEFAULT_AVATAR,
+        })
       }
       
       navigate('/profile')
@@ -43,33 +43,19 @@ const Login = () => {
     setErrorMessage('')
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const data = await fetchApi('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(formData)
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Login failed')
-      }
-
       localStorage.setItem('navchetnaToken', data.token)
       
-      const existingProfile = JSON.parse(localStorage.getItem('navchetnaProfile')) || {}
-      
-      const newProfile = {
-        ...existingProfile,
+      saveStoredProfile({
         name: data.user.name,
-        title: data.user.title || "Fitness Enthusiast",
+        title: data.user.title || "",
         location: data.user.location || "",
-        avatar: data.user.avatar || "https://i.pravatar.cc/150?img=11",
-      }
-      
-      localStorage.setItem('navchetnaProfile', JSON.stringify(newProfile))
+        avatar: data.user.avatar || DEFAULT_AVATAR,
+      })
 
       navigate('/profile')
     } catch (error) {
@@ -78,7 +64,7 @@ const Login = () => {
   }
 
   const handleGoogleAuth = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google'
+    window.location.href = `${API_BASE_URL || ''}/api/auth/google`
   }
 
   return (

@@ -1,6 +1,7 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import AIWorkoutCoach from './components/AIWorkoutCoach';
+import FloatingAICoach from './components/FloatingAICoach';
 
 import Navbar from './components/navbar'
 import Sidebar from './components/Sidebar'
@@ -16,13 +17,16 @@ import Profile from './pages/Profile'
 
 
 function App() {
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const location = useLocation()
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
+  // Active training routes where the AI Coach should float
+  const trainingRoutes = ['/dashboard', '/workouts', '/leaderboard', '/ai-coach', '/training', '/training-zone']
+  const isTrainingZone = trainingRoutes.some(route => location.pathname === route || location.pathname.startsWith(route + '/'))
 
   return (
     <>
@@ -51,6 +55,16 @@ function App() {
 
           <Route
             path="/dashboard"
+            element={<Dashboard />}
+          />
+
+          <Route
+            path="/training"
+            element={<Dashboard />}
+          />
+
+          <Route
+            path="/training-zone"
             element={<Dashboard />}
           />
 
@@ -91,6 +105,9 @@ function App() {
         </Routes>
 
       </main>
+
+      {/* FLOATING AI COACH IN TRAINING ZONE */}
+      {isTrainingZone && <FloatingAICoach />}
 
     </>
   )

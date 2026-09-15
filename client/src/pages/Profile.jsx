@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   FiMapPin,
@@ -14,75 +15,53 @@ import {
   FiUser,
   FiTrash2,
   FiCamera,
+  FiUploadCloud,
+  FiLogOut,
 } from "react-icons/fi";
-
+import {
+  DEFAULT_AVATAR,
+  getStoredProfile,
+  saveStoredProfile,
+  logoutUser,
+  compressImage,
+  syncProfileWithBackend,
+} from "../utils/userProfile";
+import { fetchApi, uploadMediaApi, resolveMediaUrl } from "../utils/api";
 
 const defaultProfile = {
-  name: "ISHOWSPEED",
-  title: "Hybrid Athlete & Marathon Runner",
-  location: "Budge Budge, West Bengal",
-  age: "20",
-  gender: "Male",
-  avatar: "https://static-cdn.jtvnw.net/jtv_user_pictures/46a38d3a-a39c-4c43-ac12-c331b1c469c2-profile_image-300x300.png",
+  name: "Athlete",
+  title: "",
+  location: "",
+  age: "",
+  gender: "",
+  avatar: DEFAULT_AVATAR,
 
-  posts: "42",
-  followers: "2,985",
-  following: "132",
+  posts: "0",
+  followers: "0",
+  following: "0",
 
-  workouts: "342",
-  activeDays: "180",
-  streak: "12",
+  workouts: "0",
+  activeDays: "0",
+  streak: "0",
 
-  disciplines: [
-    "Calisthenics",
-    "Powerlifting",
-    "HIIT",
-    "Endurance Running",
-    "Mobility",
-  ],
+  disciplines: [],
 };
 
 
-const defaultPosts = [
-  {
-    id: 1,
-
-    text:
-      "Just crushed a 10km morning run! The weather in Budge Budge is absolutely perfect for endurance training today. Who else is getting their miles in? 🏃‍♂️💨",
-
-    time: "2 hours ago",
-
-    likes: 24,
-
-    comments: 5,
-  },
-
-  {
-    id: 2,
-
-    text:
-      "Hit a new PR on the bench press today! 225lbs for 3 solid reps. Consistency in the Training Zone is finally paying off. 💪🔥",
-
-    time: "Yesterday",
-
-    likes: 156,
-
-    comments: 12,
-  },
-];
+const defaultPosts = [];
 
 
 const Profile = () => {
-
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   /* =========================================
      PROFILE STATE
   ========================================= */
 
   const [profileData, setProfileData] =
-    useState(defaultProfile);
+    useState(() => getStoredProfile());
 
 
   /* =========================================
@@ -98,103 +77,163 @@ const Profile = () => {
   ========================================= */
 
   useEffect(() => {
+    const loadedProfile = getStoredProfile();
+    setProfileData(loadedProfile);
 
-    const savedProfile =
-      localStorage.getItem("navchetnaProfile");
+    // Synchronize latest profile data with MongoDB if logged in
+    syncProfileWithBackend().then((synced) => {
+      if (synced) setProfileData(synced);
+    });
 
-    const savedPosts =
-      localStorage.getItem("navchetnaPosts");
+    const loadUserPosts = async () => {
+      try {
+        const allPosts = await fetchApi('/api/posts');
+        if (Array.isArray(allPosts)) {
+          const currentProfile = getStoredProfile();
+          const currentUserId = currentProfile._id || currentProfile.id;
+          const userPosts = allPosts.filter((p) => {
+            const pAuthorId = p.userId?._id || p.userId;
+            const pAuthorName = p.userId?.name || p.username;
+            return (
+              (currentUserId && pAuthorId && String(currentUserId) === String(pAuthorId)) ||
+              pAuthorName === "You" ||
+              pAuthorName === currentProfile.name
+            );
+          });
+          setPosts(userPosts);
+          return;
+        }
+      } catch (err) {
+        console.warn("Could not fetch user posts from server, checking local backup:", err.message);
+      }
 
+      const savedPosts = localStorage.getItem("navchetnaPosts");
+      if (savedPosts) {
+        try {
+          const parsed = JSON.parse(savedPosts);
+          const isLegacyDefaultPosts =
+            Array.isArray(parsed) &&
+            parsed.length > 0 &&
+            parsed.every(
+              (p) =>
+                (p.id === 1 && p.text?.includes("Budge Budge")) ||
+                (p.id === 2 && p.text?.includes("225lbs"))
+            );
+          if (isLegacyDefaultPosts) {
+            localStorage.removeItem("navchetnaPosts");
+            setPosts([]);
+          } else {
+            setPosts(parsed);
+          }
+        } catch {
+          setPosts([]);
+        }
+      } else {
+        setPosts([]);
+      }
+    };
 
-    if (savedProfile) {
-
-      setProfileData(
-        JSON.parse(savedProfile)
-      );
-
-    }
-
-
-    if (savedPosts) {
-
-      setPosts(
-        JSON.parse(savedPosts)
-      );
-
-    }
-
+    loadUserPosts();
   }, []);
 
+  /* =========================================
+     AVATAR HANDLERS
+  ========================================= */
 
+  const handleAvatarFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid image file (JPEG, PNG, WebP, etc.)");
+      return;
+    }
+
+    if (file.size > 25 * 1024 * 1024) {
+      alert("Image size should be under 25MB");
+      return;
+    }
+
+    try {
+      setIsUploadingAvatar(true);
+      const compressedDataUrl = await compressImage(file, 400, 400, 0.85);
+      let finalAvatarUrl = compressedDataUrl;
+
+      try {
+        const uploadRes = await uploadMediaApi(compressedDataUrl);
+        if (uploadRes?.url) {
+          finalAvatarUrl = uploadRes.url;
+        }
+      } catch (uploadErr) {
+        console.warn("Server avatar upload notice:", uploadErr.message);
+      }
+
+      setProfileData((prev) => {
+        const updated = {
+          ...prev,
+          avatar: finalAvatarUrl,
+        };
+        saveStoredProfile(updated);
+        return updated;
+      });
+    } catch (err) {
+      console.error("Failed to process image:", err);
+      alert("Failed to process image. Please try another image file.");
+    } finally {
+      setIsUploadingAvatar(false);
+      e.target.value = "";
+    }
+  };
 
   /* =========================================
      INPUT CHANGE
   ========================================= */
 
   const handleInputChange = (e) => {
-
     const { name, value } = e.target;
 
-
     setProfileData((prev) => ({
-
       ...prev,
-
       [name]: value,
-
     }));
-
   };
-
-
 
   /* =========================================
      DISCIPLINE CHANGE
   ========================================= */
 
   const handleDisciplinesChange = (e) => {
-
     const disciplines = e.target.value
-
       .split(",")
-
       .map((item) => item.trim())
-
       .filter((item) => item !== "");
 
-
     setProfileData((prev) => ({
-
       ...prev,
-
       disciplines,
-
     }));
-
   };
-
-
 
   /* =========================================
      SAVE PROFILE
   ========================================= */
 
   const handleSave = (e) => {
-
     e.preventDefault();
-
-
-    localStorage.setItem(
-
-      "navchetnaProfile",
-
-      JSON.stringify(profileData)
-
-    );
-
-
+    saveStoredProfile(profileData);
     setIsEditing(false);
+  };
 
+  /* =========================================
+     LOGOUT HANDLER
+  ========================================= */
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (!confirmLogout) return;
+
+    logoutUser();
+    navigate("/login");
   };
 
 
@@ -203,36 +242,26 @@ const Profile = () => {
      DELETE POST
   ========================================= */
 
-  const handleDeletePost = (postId) => {
-
+  const handleDeletePost = async (postId, postMongoId) => {
     const confirmDelete = window.confirm(
-
       "Are you sure you want to delete this post?"
-
     );
-
-
     if (!confirmDelete) return;
 
+    const targetId = postMongoId || postId;
+    try {
+      await fetchApi(`/api/posts/${targetId}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.warn("Delete post backend notice:", err.message);
+    }
 
     const updatedPosts = posts.filter(
-
-      (post) => post.id !== postId
-
+      (post) => (post._id || post.id) !== targetId && post.id !== postId
     );
-
-
     setPosts(updatedPosts);
-
-
-    localStorage.setItem(
-
-      "navchetnaPosts",
-
-      JSON.stringify(updatedPosts)
-
-    );
-
+    localStorage.setItem("navchetnaPosts", JSON.stringify(updatedPosts));
   };
 
 
@@ -258,17 +287,21 @@ const Profile = () => {
           {/* PROFILE IMAGE */}
 
           <div className="header-left-col">
-
-            <div className="profile-avatar-container">
-
+            <div
+              className="profile-avatar-container"
+              onClick={() => setIsEditing(true)}
+              title="Click to edit profile picture"
+              style={{ cursor: "pointer" }}
+            >
               <img
-                src={profileData.avatar}
+                src={resolveMediaUrl(profileData.avatar || DEFAULT_AVATAR)}
                 alt="Profile"
                 className="profile-avatar-squircle"
               />
-
+              <div className="avatar-camera-badge" title="Change Photo">
+                <FiCamera size={18} />
+              </div>
             </div>
-
           </div>
 
 
@@ -282,7 +315,7 @@ const Profile = () => {
 
               <h1 className="athlete-header-name">
 
-                {profileData.name}
+                {profileData.name || "Athlete"}
 
               </h1>
 
@@ -299,36 +332,33 @@ const Profile = () => {
 
 
 
-            <p className="user-title">
-
-              {profileData.title}
-
-            </p>
+            {profileData.title ? (
+              <p className="user-title">
+                {profileData.title}
+              </p>
+            ) : (
+              <p className="user-title" style={{ color: "#9ca3af", fontStyle: "italic" }}>
+                No bio added yet
+              </p>
+            )}
 
 
 
             <div className="profile-details-row">
 
+              {profileData.location && (
+                <span className="profile-location">
+                  <FiMapPin size={14} />
+                  {profileData.location}
+                </span>
+              )}
 
-              <span className="profile-location">
-
-                <FiMapPin size={14} />
-
-                {profileData.location}
-
-              </span>
-
-
-              <span className="profile-location">
-
-                <FiUser size={14} />
-
-                {profileData.age} yrs,
-                {" "}
-                {profileData.gender}
-
-              </span>
-
+              {(profileData.age || profileData.gender) && (
+                <span className="profile-location">
+                  <FiUser size={14} />
+                  {[profileData.age ? `${profileData.age} yrs` : null, profileData.gender].filter(Boolean).join(", ")}
+                </span>
+              )}
 
             </div>
 
@@ -336,32 +366,22 @@ const Profile = () => {
 
             <div className="profile-actions-inline">
 
-
-              <button className="btn-primary">
-
-                Follow
-
-              </button>
-
-
-              <button className="btn-outline">
-
-                Message
-
-              </button>
-
-
               <button
-                className="btn-outline edit-profile-btn"
+                className="btn-primary edit-profile-btn"
                 onClick={() => setIsEditing(true)}
               >
-
                 <FiEdit2 size={14} />
-
                 Edit Profile
-
               </button>
 
+              <button
+                className="btn-outline logout-profile-btn"
+                onClick={handleLogout}
+                title="Log out of your account"
+              >
+                <FiLogOut size={14} />
+                Log Out
+              </button>
 
             </div>
 
@@ -396,7 +416,7 @@ const Profile = () => {
 
               <span className="stat-val">
 
-                {profileData.followers}
+                {profileData.followers || 0}
 
               </span>
 
@@ -413,7 +433,7 @@ const Profile = () => {
 
               <span className="stat-val">
 
-                {profileData.following}
+                {profileData.following || 0}
 
               </span>
 
@@ -488,21 +508,19 @@ const Profile = () => {
 
           <div className="tags-container">
 
-            {profileData.disciplines?.map(
-
-              (discipline, index) => (
-
+            {profileData.disciplines && profileData.disciplines.length > 0 ? (
+              profileData.disciplines.map((discipline, index) => (
                 <span
                   className="tag"
                   key={index}
                 >
-
                   {discipline}
-
                 </span>
-
-              )
-
+              ))
+            ) : (
+              <span className="no-tags-text" style={{ color: "#9ca3af", fontSize: "14px" }}>
+                No training disciplines added yet
+              </span>
             )}
 
           </div>
@@ -539,7 +557,7 @@ const Profile = () => {
 
                 <span className="perf-val">
 
-                  {profileData.workouts}
+                  {profileData.workouts || 0}
 
                 </span>
 
@@ -569,7 +587,7 @@ const Profile = () => {
 
                 <span className="perf-val">
 
-                  {profileData.activeDays}
+                  {profileData.activeDays || 0}
 
                 </span>
 
@@ -599,7 +617,7 @@ const Profile = () => {
 
                 <span className="perf-val">
 
-                  {profileData.streak}
+                  {profileData.streak || 0}
 
                 </span>
 
@@ -692,110 +710,78 @@ const Profile = () => {
 
 
             posts.map((post) => (
-
-
               <div
                 className="post-feed-item"
-                key={post.id}
+                key={post._id || post.id}
               >
-
-
                 {/* POST HEADER */}
-
                 <div className="post-header">
-
-
                   <div className="post-author-info">
-
-
                     <img
-                      src={profileData.avatar}
-                      alt={profileData.name}
+                      src={resolveMediaUrl(post.avatar || profileData.avatar || DEFAULT_AVATAR)}
+                      alt={post.username || profileData.name}
                       className="post-avatar"
                     />
-
-
                     <div className="post-meta">
-
-
                       <span className="post-author">
-
-                        {profileData.name}
-
+                        {post.username || profileData.name}
                       </span>
-
-
                       <span className="post-time">
-
-                        {post.time}
-
+                        {post.time || (post.createdAt ? new Date(post.createdAt).toLocaleDateString() : "Just now")}
                       </span>
-
-
                     </div>
-
-
                   </div>
 
-
-
                   {/* DELETE BUTTON */}
-
                   <button
                     className="delete-post-btn"
                     onClick={() =>
-                      handleDeletePost(post.id)
+                      handleDeletePost(post.id, post._id)
                     }
                     title="Delete Post"
                   >
-
                     <FiTrash2 size={17} />
-
                   </button>
-
-
                 </div>
 
-
+                {/* POST IMAGE */}
+                {post.image && (
+                  <div className="profile-post-image-wrap" style={{ margin: "12px 0", borderRadius: "10px", overflow: "hidden" }}>
+                    <img
+                      src={resolveMediaUrl(post.image)}
+                      alt="Post"
+                      style={{ width: "100%", maxHeight: "360px", objectFit: "cover", display: "block" }}
+                    />
+                  </div>
+                )}
 
                 {/* POST TEXT */}
-
                 <p className="post-text">
-
-                  {post.text}
-
+                  {post.caption || post.content || post.text}
                 </p>
 
-
-
                 {/* POST ACTIONS */}
-
                 <div className="post-actions">
-
-
                   <button className="post-action-btn">
-
                     <FiHeart size={16} />
-
                     <span>
-
-                      {post.likes} Likes
-
+                      {post.likesCount !== undefined
+                        ? post.likesCount
+                        : Array.isArray(post.likes)
+                        ? post.likes.length
+                        : post.likes || 0}{" "}
+                      Likes
                     </span>
-
                   </button>
 
-
                   <button className="post-action-btn">
-
                     <FiMessageCircle size={16} />
-
                     <span>
-
-                      {post.comments} Comments
-
+                      {Array.isArray(post.comments)
+                        ? post.comments.length
+                        : post.comments || 0}{" "}
+                      Comments
                     </span>
-
                   </button>
 
 
@@ -881,34 +867,45 @@ const Profile = () => {
 
 
               {/* AVATAR */}
-
               <div className="edit-form-group">
-
-                <label>
-
-                  Profile Image URL
-
-                </label>
-
-
-                <div className="input-with-icon">
-
-                  <FiCamera />
-
-                  <input
-
-                    type="text"
-
-                    name="avatar"
-
-                    value={profileData.avatar}
-
-                    onChange={handleInputChange}
-
+                <label>Profile Picture</label>
+                <div className="avatar-edit-preview-box">
+                  <img
+                    src={resolveMediaUrl(profileData.avatar || DEFAULT_AVATAR)}
+                    alt="Preview"
+                    className="avatar-edit-thumb"
                   />
-
+                  <div className="avatar-edit-controls">
+                    <label
+                      className="avatar-upload-action"
+                      style={{
+                        opacity: isUploadingAvatar ? 0.65 : 1,
+                        cursor: isUploadingAvatar ? "wait" : "pointer",
+                        pointerEvents: isUploadingAvatar ? "none" : "auto",
+                      }}
+                    >
+                      <FiUploadCloud /> {isUploadingAvatar ? "Optimizing & Saving..." : "Upload New Photo"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={isUploadingAvatar}
+                        onChange={handleAvatarFile}
+                        style={{ display: "none" }}
+                      />
+                    </label>
+                  </div>
                 </div>
 
+                <div className="input-with-icon" style={{ marginTop: "10px" }}>
+                  <FiCamera />
+                  <input
+                    type="text"
+                    name="avatar"
+                    placeholder="Or enter Image URL"
+                    value={profileData.avatar}
+                    onChange={handleInputChange}
+                  />
+                </div>
               </div>
 
 
@@ -927,13 +924,10 @@ const Profile = () => {
                 <input
 
                   type="text"
-
                   name="name"
-
+                  placeholder="Your display name"
                   value={profileData.name}
-
                   onChange={handleInputChange}
-
                 />
 
               </div>
@@ -952,15 +946,11 @@ const Profile = () => {
 
 
                 <input
-
                   type="text"
-
                   name="title"
-
+                  placeholder="e.g. Marathon Runner, Fitness Enthusiast"
                   value={profileData.title}
-
                   onChange={handleInputChange}
-
                 />
 
               </div>
@@ -979,15 +969,11 @@ const Profile = () => {
 
 
                 <input
-
                   type="text"
-
                   name="location"
-
+                  placeholder="e.g. Kolkata, India"
                   value={profileData.location}
-
                   onChange={handleInputChange}
-
                 />
 
               </div>
@@ -1009,15 +995,11 @@ const Profile = () => {
 
 
                   <input
-
                     type="number"
-
                     name="age"
-
+                    placeholder="e.g. 24"
                     value={profileData.age}
-
                     onChange={handleInputChange}
-
                   />
 
                 </div>
@@ -1036,22 +1018,20 @@ const Profile = () => {
 
 
                   <select
-
                     name="gender"
-
-                    value={profileData.gender}
-
+                    value={profileData.gender || ""}
                     onChange={handleInputChange}
-
                   >
 
-                    <option>Male</option>
+                    <option value="">Select gender</option>
 
-                    <option>Female</option>
+                    <option value="Male">Male</option>
 
-                    <option>Other</option>
+                    <option value="Female">Female</option>
 
-                    <option>Prefer not to say</option>
+                    <option value="Other">Other</option>
+
+                    <option value="Prefer not to say">Prefer not to say</option>
 
                   </select>
 
@@ -1074,17 +1054,14 @@ const Profile = () => {
 
 
                 <input
-
                   type="text"
-
+                  placeholder="e.g. Running, Calisthenics, Yoga"
                   value={
-                    profileData.disciplines.join(", ")
+                    profileData.disciplines?.join(", ") || ""
                   }
-
                   onChange={
                     handleDisciplinesChange
                   }
-
                 />
 
 
@@ -1113,15 +1090,11 @@ const Profile = () => {
 
 
                   <input
-
                     type="number"
-
                     name="workouts"
-
+                    placeholder="0"
                     value={profileData.workouts}
-
                     onChange={handleInputChange}
-
                   />
 
                 </div>
@@ -1138,15 +1111,11 @@ const Profile = () => {
 
 
                   <input
-
                     type="number"
-
                     name="activeDays"
-
+                    placeholder="0"
                     value={profileData.activeDays}
-
                     onChange={handleInputChange}
-
                   />
 
                 </div>
@@ -1166,15 +1135,11 @@ const Profile = () => {
 
 
                 <input
-
                   type="text"
-
                   name="followers"
-
+                  placeholder="0"
                   value={profileData.followers}
-
                   onChange={handleInputChange}
-
                 />
 
               </div>
