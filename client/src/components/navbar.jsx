@@ -8,8 +8,11 @@ import {
 } from 'react-icons/fi'
 import { FaFire } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
+import { useProfile } from '../utils/userProfile'
+import { resolveMediaUrl } from '../utils/api'
 
 const Navbar = ({ toggleSidebar }) => {
+  const { profile } = useProfile()
   const [isOpen, setIsOpen] = useState(false)
   const [isStreakOpen, setIsStreakOpen] = useState(false)
   const [completedDays, setCompletedDays] = useState([])
@@ -26,12 +29,10 @@ const Navbar = ({ toggleSidebar }) => {
   }, [])
 
   useEffect(() => {
-    
     const token = localStorage.getItem('navchetnaToken')
-    
-    setIsLoggedIn(!!token)
-    
-  }, [location])
+    const savedProf = localStorage.getItem('navchetnaProfile')
+    setIsLoggedIn(Boolean(token || savedProf))
+  }, [location, profile])
 
   const today = new Date()
   const currentYear = today.getFullYear()
@@ -382,17 +383,19 @@ const Navbar = ({ toggleSidebar }) => {
           )}
 
           {isLoggedIn && (
-            <div className="profile-menu">
-
+            <Link
+              to="/profile"
+              className="profile-menu"
+              title={`${profile.name || "Athlete"} - View Profile`}
+              onClick={closeMenu}
+            >
               <img
-                src="https://i.pravatar.cc/150?img=11"
-                alt="User"
+                src={resolveMediaUrl(profile.avatar)}
+                alt={profile.name || "User"}
                 className="avatar"
               />
-
               <FiChevronDown className="dropdown-icon" />
-
-            </div>
+            </Link>
           )}
 
         </div>

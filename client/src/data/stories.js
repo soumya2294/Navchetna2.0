@@ -2,7 +2,7 @@ export const stories = [
   {
     id: 1,
     username: "Your Story",
-    avatar: "https://i.pravatar.cc/150?img=11",
+    avatar: "/default-avatar.png",
     image:
       "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop",
     caption: "Ready to crush today's workout! 💪🔥",

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { DEFAULT_AVATAR, saveStoredProfile } from '../utils/userProfile'
+import { fetchApi, API_BASE_URL } from '../utils/api'
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -19,29 +21,20 @@ const Signup = () => {
     setErrorMessage('')
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const data = await fetchApi('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(formData)
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Signup failed')
-      }
-
       localStorage.setItem('navchetnaToken', data.token)
       
-      const newProfile = {
+      saveStoredProfile({
         name: data.user.name,
-        title: data.user.title,
-        location: data.user.location,
+        title: data.user.title || "",
+        location: data.user.location || "",
         age: "",
         gender: "",
-        avatar: data.user.avatar,
+        avatar: data.user.avatar || DEFAULT_AVATAR,
         posts: "0",
         followers: "0",
         following: "0",
@@ -49,8 +42,7 @@ const Signup = () => {
         activeDays: "0",
         streak: "0",
         disciplines: []
-      }
-      localStorage.setItem('navchetnaProfile', JSON.stringify(newProfile))
+      })
 
       navigate('/profile')
     } catch (error) {
@@ -59,7 +51,7 @@ const Signup = () => {
   }
 
   const handleGoogleAuth = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google'
+    window.location.href = `${API_BASE_URL || ''}/api/auth/google`
   }
 
   return (

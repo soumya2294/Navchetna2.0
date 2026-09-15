@@ -15,6 +15,10 @@ const postSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    activity: {
+      type: String,
+      default: 'Fitness Journey'
+    },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -36,7 +40,11 @@ const postSchema = new mongoose.Schema(
           default: Date.now
         }
       }
-    ]
+    ],
+    sharesCount: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 )

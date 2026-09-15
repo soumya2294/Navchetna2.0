@@ -1,3 +1,14 @@
 node_modules/
-
-node_modules/
+.env
+.env.*
+!.env.example
+*.env
+client/.env
+client/.env.*
+!client/.env.example
+Server/.env
+Server/.env.*
+dist/
+client/dist/
+Server/uploads/*
+!Server/uploads/.gitkeep
