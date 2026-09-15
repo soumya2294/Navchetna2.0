@@ -4883,8 +4883,7 @@ a {
 .dashboard-main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr; /* Two columns side-by-side */
-  gap: 20px;
-}
+
 
 .dashboard-card {
   padding: 25px;

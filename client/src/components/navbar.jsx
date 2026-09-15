@@ -146,8 +146,8 @@ const Navbar = ({ toggleSidebar }) => {
             onClick={closeMenu}
           >
             <span className="brand-text">
-              NAVCHETNA{" "}
-              <span className="brand-accent">2.0</span>
+              FIT{" "}
+              <span className="brand-accent">MATES</span>
             </span>
           </Link>
         </div>
