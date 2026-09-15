@@ -18,8 +18,10 @@ function speakPrompt(text, isMuted) {
   window.speechSynthesis.speak(utterance);
 }
 
-export default function AIWorkoutCoach({ onExit }) {
-  const [exercise, setExercise] = useState('squats');
+export default function AIWorkoutCoach({ exerciseData, onExit }) {
+  const [exercise, setExercise] = useState(
+    exerciseData?.id === 'push-ups' ? 'pushups' : (exerciseData?.id || 'squats')
+  );
   const [targetReps, setTargetReps] = useState(10);
   const [reps, setReps] = useState(0);
   const [stage, setStage] = useState('UP');
@@ -35,7 +37,14 @@ export default function AIWorkoutCoach({ onExit }) {
   const canvasRef = useRef(null);
   const cameraInstance = useRef(null);
   const poseInstance = useRef(null);
-  const repTracker = useRef({ stage: 'UP', reps: 0, lastSpoken: 0 });
+ const repTracker = useRef({ 
+    stage: 'AT_TOP', 
+    reps: 0, 
+    lastSpoken: 0,
+    smoothedAngle: 180,
+    bottomReached: false,
+    repStartTime: Date.now()
+  });
 const syncXPToLeaderboard = (earnedXP) => {
     const existingXP = parseInt(localStorage.getItem('userXP') || '450', 10);
     const updatedXP = existingXP + earnedXP;
@@ -44,7 +53,14 @@ const syncXPToLeaderboard = (earnedXP) => {
   const resetSession = () => {
     setReps(0);
     setStage('UP');
-    repTracker.current = { stage: 'UP', reps: 0, lastSpoken: 0 };
+   repTracker.current = {
+      stage: 'AT_TOP',
+      reps: 0,
+      lastSpoken: 0,
+      smoothedAngle: 180,
+      bottomReached: false,
+      repStartTime: Date.now()
+    };
     setFeedback('Step back into the frame');
     setFeedbackType('info');
     setWorkoutComplete(false);
@@ -134,42 +150,77 @@ const syncXPToLeaderboard = (earnedXP) => {
       const shoulder = isLeft ? lm[11] : lm[12];
 
       if (hip && knee && ankle && hip.visibility > 0.5 && knee.visibility > 0.5) {
-        const kneeAngle = calculateAngle(hip, knee, ankle);
-        const backAngle = calculateAngle(shoulder, hip, knee);
-        setLiveAngle(kneeAngle);
+       // 1. EMA Smoothing (eliminates landmark jitter)
+      const rawKneeAngle = calculateAngle(hip, knee, ankle);
+      repTracker.current.smoothedAngle = 0.3 * rawKneeAngle + 0.7 * (repTracker.current.smoothedAngle || rawKneeAngle);
+      const kneeAngle = Math.round(repTracker.current.smoothedAngle);
 
-        if (kneeAngle < 90 && repTracker.current.stage === 'UP') {
-          repTracker.current.stage = 'DOWN';
+      const backAngle = calculateAngle(shoulder, hip, knee);
+      setLiveAngle(kneeAngle);
+
+      const now = Date.now();
+      const tracker = repTracker.current;
+
+      // 2. 4-Stage State Machine
+      if (tracker.stage === 'AT_TOP') {
+        if (kneeAngle < 135) {
+          tracker.stage = 'DESCENDING';
+          tracker.bottomReached = false;
+          tracker.repStartTime = now;
+          setStage('DESCENDING');
+        }
+      } else if (tracker.stage === 'DESCENDING') {
+        if (kneeAngle <= 90) {
+          tracker.stage = 'AT_BOTTOM';
+          tracker.bottomReached = true; // Earns depth ticket
           setStage('DOWN');
-
           if (backAngle < 135) {
             setFeedback('⚠️ Keep your back straight!');
             setFeedbackType('warning');
             notifyCoach('Keep your back straight');
           } else {
-            setFeedback('✅ Perfect depth! Drive up');
+            setFeedback('Perfect depth! Drive up!');
             setFeedbackType('success');
           }
-        }
-
-        if (kneeAngle > 160 && repTracker.current.stage === 'DOWN') {
-          repTracker.current.stage = 'UP';
-          repTracker.current.reps += 1;
-          const count = repTracker.current.reps;
+        } else if (kneeAngle > 160) {
+          tracker.stage = 'AT_TOP';
           setStage('UP');
-          setReps(count);
-          setFeedback(`Rep ${count} counted!`);
-          setFeedbackType('success');
-          notifyCoach(`${count}`);
+        }
+      } else if (tracker.stage === 'AT_BOTTOM') {
+        if (kneeAngle > 115) {
+          tracker.stage = 'ASCENDING';
+          setStage('ASCENDING');
+        }
+      } else if (tracker.stage === 'ASCENDING') {
+        if (kneeAngle >= 160) {
+          const duration = now - tracker.repStartTime;
 
-          if (count >= targetReps) {
-            setWorkoutComplete(true);
-            notifyCoach('Challenge complete!');
-            syncXPToLeaderboard(count * 5);
+          // 3. Depth check + 900ms speed threshold
+          if (tracker.bottomReached && duration >= 900) {
+            tracker.reps += 1;
+            const count = tracker.reps;
+            setStage('UP');
+            setReps(count);
+            setFeedback(`Rep ${count} counted!`);
+            setFeedbackType('success');
+            notifyCoach(String(count));
+
+            if (count >= targetReps) {
+              setWorkoutComplete(true);
+              notifyCoach('Challenge complete!');
+              syncXPToLeaderboard(count * 5);
+            }
+          } else {
+            setFeedback('Rep too fast or incomplete');
+            setFeedbackType('warning');
           }
+
+          tracker.stage = 'AT_TOP';
+          tracker.bottomReached = false;
         }
       }
     }
+  }
 
     if (exercise === 'pushups') {
       const isLeft = (lm[11].visibility + lm[13].visibility) > (lm[12].visibility + lm[14].visibility);
@@ -180,43 +231,77 @@ const syncXPToLeaderboard = (earnedXP) => {
       const ankle = isLeft ? lm[27] : lm[28];
 
       if (shoulder && elbow && wrist && hip && ankle && shoulder.visibility > 0.5) {
-        const elbowAngle = calculateAngle(shoulder, elbow, wrist);
-        const plankAngle = calculateAngle(shoulder, hip, ankle);
-        setLiveAngle(elbowAngle);
+        // 1. EMA Smoothing (removes jitter)
+      const rawElbowAngle = calculateAngle(shoulder, elbow, wrist);
+      repTracker.current.smoothedAngle = 0.3 * rawElbowAngle + 0.7 * (repTracker.current.smoothedAngle || rawElbowAngle);
+      const elbowAngle = Math.round(repTracker.current.smoothedAngle);
 
-        const isPlankValid = plankAngle >= 150 && plankAngle <= 185;
+      const plankAngle = calculateAngle(shoulder, hip, ankle);
+      setLiveAngle(elbowAngle);
 
-        if (!isPlankValid) {
-          setFeedback('⚠️ Keep core straight!');
-          setFeedbackType('warning');
-          notifyCoach('Engage your core');
+      const isPlankValid = plankAngle >= 150 && plankAngle <= 210;
+
+      const now = Date.now();
+      const tracker = repTracker.current;
+
+      // 2. 4-Stage State Machine
+      if (tracker.stage === 'AT_TOP') {
+        if (elbowAngle < 135) {
+          tracker.stage = 'DESCENDING';
+          tracker.bottomReached = false;
+          tracker.repStartTime = now;
+          setStage('DESCENDING');
         }
-
-        if (elbowAngle <= 90 && repTracker.current.stage === 'UP') {
-          repTracker.current.stage = 'DOWN';
+      } else if (tracker.stage === 'DESCENDING') {
+        if (elbowAngle <= 90) {
+          tracker.stage = 'AT_BOTTOM';
+          tracker.bottomReached = true; // Depth ticket earned
           setStage('DOWN');
-          if (isPlankValid) {
-            setFeedback('✅ Chest low! Explode up');
+          if (!isPlankValid) {
+            setFeedback('⚠️ Keep core straight!');
+            setFeedbackType('warning');
+            notifyCoach('Engage your core');
+          } else {
+            setFeedback('Chest low! Explode up!');
             setFeedbackType('success');
           }
-        }
-
-        if (elbowAngle >= 160 && repTracker.current.stage === 'DOWN') {
-          repTracker.current.stage = 'UP';
-          repTracker.current.reps += 1;
-          const count = repTracker.current.reps;
+        } else if (elbowAngle > 160) {
+          tracker.stage = 'AT_TOP';
           setStage('UP');
-          setReps(count);
-          setFeedback(`Rep ${count} counted!`);
-          setFeedbackType('success');
-          notifyCoach(`${count}`);
-
-          if (count >= targetReps) {
-            setWorkoutComplete(true);
-            notifyCoach('Workout complete!');
-            syncXPToLeaderboard(count * 5);
-          }
         }
+      } else if (tracker.stage === 'AT_BOTTOM') {
+        if (elbowAngle > 115) {
+          tracker.stage = 'ASCENDING';
+          setStage('ASCENDING');
+        }
+      } else if (tracker.stage === 'ASCENDING') {
+        if (elbowAngle >= 160) {
+          const duration = now - tracker.repStartTime;
+
+          // 3. Depth check + 900ms speed threshold
+          if (tracker.bottomReached && duration >= 900) {
+            tracker.reps += 1;
+            const count = tracker.reps;
+            setStage('UP');
+            setReps(count);
+            setFeedback(`Rep ${count} counted!`);
+            setFeedbackType('success');
+            notifyCoach(String(count));
+
+            if (count >= targetReps) {
+              setWorkoutComplete(true);
+              notifyCoach('Workout complete!');
+              syncXPToLeaderboard(count * 5);
+            }
+          } else {
+            setFeedback('Rep too fast or incomplete');
+            setFeedbackType('warning');
+          }
+
+          tracker.stage = 'AT_TOP';
+          tracker.bottomReached = false;
+        }
+      }
       }
     }
   };
